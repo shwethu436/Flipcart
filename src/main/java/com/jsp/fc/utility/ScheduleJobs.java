@@ -19,10 +19,12 @@ public class ScheduleJobs {
     	deleteUnverifiedUsers();
     }
     public void deleteUnverifiedUsers() {
-        List<User> unverifiedUsers = userRepo.findByIsEmailVerifiedFalse();
-        for (User user : unverifiedUsers) {
-            user.setDeleted(true);
-            userRepo.save(user);
+        
+        for (User user : userRepo.findAll()) {
+        	
+           if(Boolean.FALSE.equals(user.isEmailVerified())) {
+        	   userRepo.delete(user);
+           }
         }
     }
 
