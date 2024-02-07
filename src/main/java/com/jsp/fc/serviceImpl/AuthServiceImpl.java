@@ -112,7 +112,7 @@ public class AuthServiceImpl implements AuthService {
 	    }
 	}
 	private void sendVerificationEmail(User user) {
-	    // Send verification email logic goes here
+	    // Send verification email logic
 	}
 
 	      
