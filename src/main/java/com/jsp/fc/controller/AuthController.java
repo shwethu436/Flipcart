@@ -2,10 +2,12 @@ package com.jsp.fc.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jsp.fc.requestDTO.OtpModel;
 import com.jsp.fc.requestDTO.UserRequest;
 import com.jsp.fc.responseDTO.UserResponse;
 import com.jsp.fc.service.AuthService;
@@ -20,6 +22,11 @@ public class AuthController {
 	public ResponseEntity<ResponseStructure<UserResponse>> registerUser(@RequestBody UserRequest request){
 		return authService.registerUser(request);
 		
+	}
+	
+	@PostMapping("/verify-otp")
+	public ResponseEntity<String> verifyOtp(@RequestBody OtpModel otp){
+		return authService.verifyOtp(otp);
 	}
 
 }
