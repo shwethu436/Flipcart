@@ -3,8 +3,8 @@ package com.jsp.fc.serviceImpl;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,12 +18,16 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.jsp.fc.cache.CacheStore;
+import com.jsp.fc.entity.AccessToken;
 import com.jsp.fc.entity.Customer;
+import com.jsp.fc.entity.RefreshToken;
 import com.jsp.fc.entity.Seller;
 import com.jsp.fc.entity.User;
 import com.jsp.fc.exception.EmailAlreadyVerifiedException;
 import com.jsp.fc.exception.InvalidOtpException;
+import com.jsp.fc.exception.InvalidTokenException;
 import com.jsp.fc.exception.OtpExpiredException;
+import com.jsp.fc.exception.UserNameNotFoundException;
 import com.jsp.fc.exception.noUserExistException;
 import com.jsp.fc.exception.userNotLoggedInException;
 import com.jsp.fc.repository.AccessTokenRepository;
@@ -46,10 +50,7 @@ import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.transaction.Transactional;
 
-import com.jsp.fc.entity.AccessToken;
-import com.jsp.fc.entity.RefreshToken;
 import lombok.extern.slf4j.Slf4j;
 
 
@@ -302,6 +303,17 @@ public class AuthServiceImpl implements AuthService {
     			.expiration(LocalDateTime.now().plusSeconds(refreshExpirationInSeconds))
     			.build());
     }
+    
+    public void deleteIfNotVerified() {
+
+		List<User> users =userRepo.findByIsEmailVerified(false);
+		userRepo.deleteAll(users);
+	}
+
+	
+
+
+	
 
 	
 

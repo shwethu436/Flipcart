@@ -41,8 +41,10 @@ public class AuthController {
 	}
 	
 	@PostMapping("/user-logout")
-	public ResponseEntity<String> userLogout(@CookieValue(name = "AT",required = false) String accessToken,@CookieValue(name = "RT",required = false) String refreshToken,HttpServletResponse response){
+	public ResponseEntity<String> userLogout(@CookieValue(name = "AT",required = false) String accessToken,
+			@CookieValue(name = "RT",required = false) String refreshToken,HttpServletResponse response){
 		return authService.userLogout(accessToken,refreshToken,response);
 	}
-
+	
+	
 }
