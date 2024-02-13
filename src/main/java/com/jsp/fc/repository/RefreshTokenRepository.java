@@ -15,7 +15,7 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
 	Optional<RefreshToken> findByToken(String refreshToken);
 	
 	
-	
+	List<RefreshToken> findAllByExpirationBeforeAndIsBlocked(LocalDateTime expiration, boolean isBlocked);
 	
 
 }
