@@ -19,7 +19,7 @@ public class ScheduleJobs {
     @Scheduled(fixedDelay = 1000l*60*60*24)
     public void test() {
     authServiceImpl.deleteIfNotVerified();
-   
+    authServiceImpl.deleteExpiredTokens();
     }
     
 }

@@ -310,17 +310,14 @@ public class AuthServiceImpl implements AuthService {
 		userRepo.deleteAll(users);
 	}
 
-	
+    public void deleteExpiredTokens() {
+		List<AccessToken> accessToken= accessTokenRepo.findAllByExpirationBeforeAndIsBlocked(LocalDateTime.now(), false);
+		accessTokenRepo.deleteAll(accessToken);
+		List<RefreshToken> refreshToken =refreshTokenRepo.findAllByExpirationBeforeAndIsBlocked(LocalDateTime.now(), false);
+		refreshTokenRepo.deleteAll(refreshToken);
+	}
 
 
-	
-
-	
-
-    
-	
-   	
-	      
 }
 
 
