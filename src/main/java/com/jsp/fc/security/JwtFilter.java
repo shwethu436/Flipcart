@@ -34,6 +34,7 @@ public class JwtFilter extends OncePerRequestFilter {
 		Cookie[] cookies = request.getCookies();
 		String at=null;
 		String rt=null;
+		if(cookies!=null) {
 		for(Cookie cookie:cookies) {
 			if(cookie.getName().equals("At"))
 				at=cookie.getValue();
@@ -56,5 +57,5 @@ public class JwtFilter extends OncePerRequestFilter {
 		}
 		filterChain.doFilter(request, response);
 	}
-
+}
 }
