@@ -14,6 +14,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -241,9 +242,64 @@ public class AuthServiceImpl implements AuthService {
         return ResponseEntity.ok("Logged out successfully");
 	}
 	
+	@Override
+	public ResponseEntity<String> revokeAllDevices(String accessToken, String refreshToken,HttpServletResponse response) {
+		if(accessToken==null && refreshToken==null) throw new userNotLoggedInException("User is Not LoggedIn !!");
+		
+		String username = SecurityContextHolder.getContext().getAuthentication().getName();
+		if(username == null) throw new UserNameNotFoundException("username not found");
+		
+		return userRepo.findByUserName(username)
+		.map(user -> {
+			
+			blockAccessToken(accessTokenRepo.findByUserAndIsBlocked(user, false));
+			blockRefreshToken(refreshTokenRepo.findByUserAndIsBlocked(user, false));
+			
+			response.addCookie(cookiemanager.invalidateCookie(new Cookie("AT", "")));
+			response.addCookie(cookiemanager.invalidateCookie(new Cookie("AT", "")));
+			
+			return ResponseEntity.ok("Revoked from all devices successfully");
+		})
+		.orElseThrow(() -> new UserNameNotFoundException("username not found"));
+	}
+
+	
+
+	@Override
+	public ResponseEntity<String> revokeAllOtherDevices(String accessToken, String refreshToken,HttpServletResponse response) {
+		
+		if(accessToken==null && refreshToken==null) throw new userNotLoggedInException("User is Not LoggedIn !!");
+		
+		String username = SecurityContextHolder.getContext().getAuthentication().getName();
+		if(username == null) throw new UserNameNotFoundException("username not found");
+		
+		return userRepo.findByUserName(username)
+		.map(user -> {
+			blockAccessToken(accessTokenRepo.findByUserAndIsBlockedAndTokenNot(user, false, accessToken));
+			blockRefreshToken(refreshTokenRepo.findByUserAndIsBlockedAndTokenNot(user, false, refreshToken));
+			
+			return ResponseEntity.ok("Revoked from all other devices excluding the current one successfully");
+		})
+		.orElseThrow(() -> new UserNameNotFoundException("username not found"));
+	}
+
 	
 	
 	//===============================================================================================================
+	
+	private void blockRefreshToken(List<RefreshToken> refreshTokens) {
+		refreshTokens.forEach(refreshToken -> {
+			refreshToken.setBlocked(true);
+			refreshTokenRepo.save(refreshToken);
+		});
+	}
+
+	private void blockAccessToken(List<AccessToken> accessTokens) {
+		accessTokens.forEach(accessToken -> {
+			accessToken.setBlocked(true);
+			accessTokenRepo.save(accessToken);
+		});
+	}
 
 	private String generateOtp() {
 		return String.valueOf(new Random().nextInt(100000,999999));

@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.jsp.fc.entity.AccessToken;
 import com.jsp.fc.entity.RefreshToken;
 import com.jsp.fc.entity.User;
 import com.jsp.fc.requestDTO.UserRequest;
@@ -17,5 +18,8 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
 	
 	List<RefreshToken> findAllByExpirationBeforeAndIsBlocked(LocalDateTime expiration, boolean isBlocked);
 	
+	List<RefreshToken> findByUserAndIsBlocked(User user, boolean b);
+	
+	List<RefreshToken> findByUserAndIsBlockedAndTokenNot(User user, boolean b, String accessToken);
 
 }
